@@ -40,7 +40,7 @@ Open Xcode and start a new project. We'll name it "AudioQuickStart".
 
 Navigate to the project's root directory in the Terminal. Run: `pod init`. Open the file entitled `PodFile`. Configure its specifications accordingly:
 
-```bash
+```ruby
 # Uncomment the next line to define a global platform for your project
 platform :ios, '9.0'
 
@@ -170,7 +170,7 @@ After the user logs in, they'll press the "Chat" button which will take them to 
 
 ### 1.6 Navigate to ChatViewController
 
-As we mentioned above, creating a conversation results from a call to the the new() method. In the absence of a server we’ll ‘simulate’ the creation of a conversation within the app when the user clicks the chatBtn.
+As we mentioned above, creating a conversation results from a call to the the `new()` method. In the absence of a server we’ll 'simulate' the creation of a conversation within the app when the user clicks the chatBtn.
 
 When we construct the segue for `ChatViewController`, we pass the first conversation so that the new controller. Remember that the `CONVERSATION_ID` comes from the id generated in [the first quickstart](https://github.com/Nexmo/conversation-ios-quickstart/blob/master/docs/1-simple-conversation.md#12---create-a-conversation).
 
@@ -321,11 +321,10 @@ Let's use a speaker emoji for our UI. Drag and drop a UIButton on the left hand 
     do {
         try conversation?.audio.enable()
         sender.titleLabel?.text = "🔇"
-    }
-    catch {
+    } catch {
           conversation?.audio.disable()
           sender.titleLabel?.text = "🔈"
-	}
+    }
 
   }
 
@@ -335,7 +334,7 @@ Configure the text property on the button's text label to display either speaker
 
 ## 2.5 Console logs
 
-By implementing our enable / disable functions, we will see the updates right there inside of Xcode in the console log!
+By implementing our enable / disable functions, we will see the updates right there inside of Xcode in the console log.
 
 ## 3.0 - Try it out!
 
