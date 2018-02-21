@@ -275,7 +275,7 @@ Create a `setupAudio()` function:
             let session = AVAudioSession.sharedInstance()
 
             try session.setCategory(AVAudioSessionCategoryPlayAndRecord)
-                    session.requestRecordPermission { _ in }
+            session.requestRecordPermission { _ in }
         } catch  {
             print(error)
         }
@@ -322,8 +322,8 @@ Let's use a speaker emoji for our UI. Drag and drop a UIButton on the left hand 
         try conversation?.audio.enable()
         sender.titleLabel?.text = "🔇"
     } catch {
-          conversation?.audio.disable()
-          sender.titleLabel?.text = "🔈"
+        conversation?.audio.disable()
+        sender.titleLabel?.text = "🔈"
     }
 
   }
