@@ -1,23 +1,23 @@
-## Getting Started with Audio 🔈 🔉 🔊 for Nexmo's In-App Messaging!
+## Getting Started with Nexmo In-App Voice!
 
-In this getting started guide we'll demonstrate how to build audio into a conversation app with Nexmo's In-App Messaging.
+In this getting started guide we'll demonstrate how to use In-App Voice for the Nexmo conversation iOS SDK.
 
 ## Concepts
 
-This guide will NOT introduce you to any of the following concepts:
+Our previous guides introduced you to the following concepts:
 
-- **Nexmo Applications** 
-- **JWTs** 
-- **Users** 
-- **Conversations** 
-- **Members** 
+- **Nexmo Applications**
+- **JWTs**
+- **Users**
+- **Conversations**
+- **Members**
 
-If you are unfamiliar with any of the above referenced concepts, checkout our quick start on simple conversations [here](https://github.com/Nexmo/conversation-ios-quickstart/blob/master/docs/1-simple-conversation.md)!
+If you are unfamiliar with any of the above referenced concepts, checkout our quick start on [simple conversation.](https://github.com/Nexmo/conversation-ios-quickstart/blob/master/docs/1-simple-conversation.md)
 
 ### Before you begin
 
 * _**[Contact us](mailto:ea-support@nexmo.com) for access to the CocoaPod (if you haven't already done so)**_
-* Ensure you have Node.JS and NPM installed (you'll need it for the Nexmo CLI) <sup>[1](#myfootnote1)</sup>
+* Ensure you have Node.JS and NPM installed (you'll need it for the Nexmo CLI)
 * Ensure you have Xcode installed
 * Create a free Nexmo account - [signup](https://dashboard.nexmo.com)
 * Install the Nexmo CLI:
@@ -32,17 +32,13 @@ If you are unfamiliar with any of the above referenced concepts, checkout our qu
     $ nexmo setup api_key api_secret
     ```
 
-### 1.0 - Create the iOS App
+### 1.0 - Start a new iOS project
 
-Assuming the basic setup we we draw our focus now to building audio into a conversation app with Nexmo's In-App Messaging.
+Open Xcode and start a new project. We'll name it "AudioQuickStart".
 
-### 1.1 Start a new project
+### 1.1 Adding the Nexmo iOS Conversation SDK to Cocoapods
 
-Open Xcode and start a new project. We'll name it "QuickStartOne". 
-
-### 1.2 Adding the Nexmo iOS Conversation SDK to Cocoapods
-
-Navigate to the project's root directory in the Terminal. Run: `pod init`. Open the file entitled `PodFile`. Configure its specifications accordingly: 
+Navigate to the project's root directory in the Terminal. Run: `pod init`. Open the file entitled `PodFile`. Configure its specifications accordingly:
 
 ```bash
 # Uncomment the next line to define a global platform for your project
@@ -51,63 +47,63 @@ platform :ios, '9.0'
 source "https://github.com/Nexmo/PodSpec.git"
 source 'git@github.com:CocoaPods/Specs.git'
 
-target 'QuickStartOne' do
+target 'AudioQuickStart' do
   # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
   use_frameworks!
-  pod "NexmoConversation", :git => "https://github.com/nexmo/conversation-ios-sdk.git", :branch => "master" # development
+  pod "NexmoConversation", :git => "https://github.com/nexmo/conversation-ios-sdk.git", :branch => "master" #latest release
 end
 
 ```
 ### 1.2 Adding ViewControllers & .storyboard files
 
-Let's add a few view controllers. Start by adding a custom subclass of `UIViewController` from a CocoaTouch file named `LoginViewController`, which we will use for creating the login functionality, and another custom subclass of `UIViewController` from a CocoaTouch file named `ChatViewController`, which we will use for creating the chat functionality. Add two new scenes to `Main.storyboard`, assigning each to one of the added custom subclasses of `UIViewController` respectively. 
+Let's add a few view controllers. Start by adding a custom subclass of `UIViewController` from a CocoaTouch file named `LoginViewController`, which we will use for creating the login functionality, and another custom subclass of `UIViewController` from a CocoaTouch file named `ChatViewController`, which we will use for creating the chat functionality. Add two new scenes to `Main.storyboard`, assigning each to one of the added custom subclasses of `UIViewController` respectively.
 
 
-### 1.4 Creating the login layout
-Let's layout the login functionality. Set constraints on the top & leading attributes of an instance of UIButton with a constant HxW at 71x94 to the top of the Bottom Layout Guide + 20 and the leading attribute of `view` + 16. This is our login button. Reverse leading to trailing for another instance of UIButton with the same constraints. This our chat button. Set the text on these instances accordingly. Add a status label centered horizontally & vertically. Finally, embedd this scene into a navigation controller. Control drag from the chat button to scene assigned to the chat controller, naming the segue `chatView`. 
+### 1.3 Creating the login layout
+Let's layout the login functionality. Set constraints on the top & leading attributes of an instance of UIButton with a constant HxW at 71x94 to the top of the Bottom Layout Guide + 20 and the leading attribute of `view` + 16. This is our login button. Reverse leading to trailing for another instance of UIButton with the same constraints. This our chat button. Set the text on these instances accordingly. Add a status label centered horizontally & vertically. Finally, embedd this scene into a navigation controller. Control drag from the chat button to scene assigned to the chat controller, naming the segue `chatView`.
 
 
-### 1.5 - Create the Login Functionality
+### 1.4 - Create the Login Functionality
 
-Below `UIKit` let's import the `NexmoConversation`. Next we setup a custom instance of the `ConversationClient` and saving it as a member variable in the view controller. 
+Below `UIKit` let's import the `NexmoConversation`. Next we setup a custom instance of the `ConversationClient` and saving it as a member variable in the view controller.
 
-```Swift
+```swift
     /// Nexmo Conversation client
     let client: ConversationClient = {
         return ConversationClient.instance
     }()
 ```
 
-We also need to wire up the buttons in `LoginViewController.swift` Don't forget to replace `USER_JWT` with the JWT generated from the Nexmo CLI in [step 1.6](#16---generate-a-user-jwt).
+We also need to wire up the buttons in `LoginViewController.swift` Don't forget to replace `USER_JWT` with the JWT generated from the Nexmo CLI. For a refresher on how to generate a JWT, check out [quickstart one](https://github.com/Nexmo/conversation-ios-quickstart/blob/master/docs/1-simple-conversation.md#15---generate-a-user-jwt).
 
-```Swift
+```swift
     // status label
     @IBOutlet weak var statusLbl: UILabel!
-    
+
     // login button
     @IBAction func loginBtn(_ sender: Any) {
-        
+
         print("DEMO - login button pressed.")
-        
+
         let token = Authenticate.userJWT
-        
+
         print("DEMO - login called on client.")
-        
+
         client.login(with: token).subscribe(onSuccess: {
-            
+
             print("DEMO - login susbscribing with token.")
             self.statusLbl.isEnabled = true
             self.statusLbl.text = "Logged in"
-            
+
             if let user = self.client.account.user {
                 print("DEMO - login successful and here is our \(user)")
             } // insert activity indicator to track subscription
-            
+
         }, onError: { [weak self] error in
             self?.statusLbl.isHidden = false
-            
+
             print(error.localizedDescription)
-            
+
             // remove to a function
             let reason: String = {
                 switch error {
@@ -119,72 +115,72 @@ We also need to wire up the buttons in `LoginViewController.swift` Don't forget 
                 default: return "unknown"
                 }
             }()
-            
+
             print("DEMO - login unsuccessful with \(reason)")
-            
+
         }).addDisposableTo(client.disposeBag) // Rx does not maintain a memory reference; to make sure that reference is still in place; keep a reference of this object while I do an operation.
     }
 
     // chat button
     @IBAction func chatBtn(_ sender: Any) {
-        
+
         let aConversation: String = "aConversation"
         _ = client.conversation.new(aConversation, withJoin: true).subscribe(onError: { error in
-            
+
             print(error)
-            
+
             guard self.client.account.user != nil else {
-                
+
                 let alert = UIAlertController(title: "LOGIN", message: "The `.user` property on self.client.account is nil", preferredStyle: .alert)
-                
+
                 let alertAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-                
+
                 alert.addAction(alertAction)
-                
+
                 self.present(alert, animated: true, completion: nil)
-                
+
                 return print("DEMO - chat self.client.account.user is nil");
-                
+
             }
-            
+
             print("DEMO - chat creation unsuccessful with \(error.localizedDescription)")
-            
+
         })
-        
+
         performSegue(withIdentifier: "chatView", sender: nil)
     }
 ```
 
-### 1.6 Stubbed Out Login
+### 1.5 Stubbed Out Login
 
 Next, let's stub out the login workflow.
 
-Create an authenticate struct with a member set as `userJWT`. For now, stub it out to always return the vaue for `USER_JWT`. 
+Create an authenticate struct with a member set as `userJWT`. For now, stub it out to always return the value for `USER_JWT`.
 
-```Swift
-// a stub for holding the value for private.key 
+```swift
+// a stub for holding the value for private.key
 struct Authenticate {
 
     static let userJWT = ""
-    
+
 }
 ```
 
 After the user logs in, they'll press the "Chat" button which will take them to the ChatViewController and let them begin chatting in the conversation we've already created.
 
-### 1.5 Navigate to ChatViewController
+### 1.6 Navigate to ChatViewController
 
 As we mentioned above, creating a conversation results from a call to the the new() method. In the absence of a server we’ll ‘simulate’ the creation of a conversation within the app when the user clicks the chatBtn.
 
-When we construct the segue for `ChatViewController`, we pass the first conversation so that the new controller. Remember that the `CONVERSATION_ID` comes from the id generated in [step 1.3](#13---create-a-conversation).
+When we construct the segue for `ChatViewController`, we pass the first conversation so that the new controller. Remember that the `CONVERSATION_ID` comes from the id generated in [the first quickstart](https://github.com/Nexmo/conversation-ios-quickstart/blob/master/docs/1-simple-conversation.md#12---create-a-conversation).
 
-```Swift
+```swift
     // prepare(for segue:)
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
+
         // setting up a segue
         let chatVC = segue.destination as? ChatController
-        
+
         // passing a reference to the conversation
         chatVC?.conversation = client.conversation.conversations.first
 
@@ -192,59 +188,57 @@ When we construct the segue for `ChatViewController`, we pass the first conversa
     }
 ```
 
-### 1.6 Create the Chat layout
+### 1.7 Create the Chat layout
 
-We'll make a `ChatActivity` with this as the layout. Add an instance of UITextView, UITextField, & UIButton.Set the constraints on UITextView with setting its constraints: .trailing = trailingMargin, .leading = Text Field.leading, .top = Top Layout Guide.bottom, .bottom + 15 = Text Field.top. Set the leading attribute on the Text Field to = leadingMargin and its .bottom attribute + 20 to Bottom Layout Guide's top attribute. Set the Button's .trailing to trailingMargin + 12 and its .bottom attribute + 20 to the Bottom Layout Guide's .top attribute. 
+We'll make a `ChatActivity` with this as the layout. Add an instance of UITextView, UITextField, & UIButton.Set the constraints on UITextView with setting its constraints: .trailing = trailingMargin, .leading = Text Field.leading, .top = Top Layout Guide.bottom, .bottom + 15 = Text Field.top. Set the leading attribute on the Text Field to = leadingMargin and its .bottom attribute + 20 to Bottom Layout Guide's top attribute. Set the Button's .trailing to trailingMargin + 12 and its .bottom attribute + 20 to the Bottom Layout Guide's .top attribute.
 
 
-### 1.7 Create the ChatActivity
+### 1.8 Create the ChatActivity
 
 Like last time we'll wire up the views in `ChatViewController.swift` We also need to grab the reference to `conversation` from the incoming view controller.
 
-```Swift
+```swift
 
 import UIKit
 import NexmoConversation
 
 class ChatController: UIViewController {
-    
+
     // conversation for passing client
     var conversation: Conversation?
-    
+
     // textView for displaying chat
     @IBOutlet weak var textView: UITextView!
-    
+
     // textField for capturing text
     @IBOutlet weak var textField: UITextField!
-    
+
 }
 
 ```
 
-### 1.8 - Sending `text` Events
+### 1.9 - Sending and receiving `text` Events
 
 To send a message we simply need to call `send()` on our instance of `conversation`. `send()` takes one argument, a `String message`.
 
-```Swift
+```swift
     // sendBtn for sending text
     @IBAction func sendBtn(_ sender: Any) {
-        
+
         do {
             // send method
             try conversation?.send(textField.text!)
-            
+
         } catch let error {
             print(error)
         }
-        
+
     }
 ```
 
-### 1.9 - Receiving `text` Events
-
 In `viewDidLoad()` we want to add a handler for handling new events like the TextEvents we create when we press the send button. We can do this like so:
 
-```Swift
+```swift
         // a handler for updating the textView with TextEvents
         conversation?.events.newEventReceived.addHandler { event in
             guard let event = event as? TextEvent, event.isCurrentlyBeingSent == false else { return }
@@ -255,26 +249,27 @@ In `viewDidLoad()` we want to add a handler for handling new events like the Tex
 ```
 ## 2.0 - Building Audio
 
-Let us build audio into our conversation app for Nexmo's In-App Messaging! Since we will be tapping into protected device functionality we will have to ask for permission. We will update our `.plist` as well as display an alert. After permissions we will add AVFoundation class, set up audio from within the SDK and a speaker emoji for our UI 🔈 🔉 🔊! We will check everything out in the console logs! 
+Since we will be tapping into protected device functionality we will have to ask for permission. We will update our `.plist` as well as display an alert. After permissions we will add AVFoundation class, set up audio from within the SDK and add a speaker emoji for our UI 🔈
 
 ## 2.1 Xcode Permission
 
-Open up the raw version of the `.plist`. Drop the following lines of code there! 
+Open up the raw version of the `.plist`. Drop the following lines of code in there.
 
 ```
 <key>NSMicrophoneUsageDescription</key>
 	<string>audio call permission</string>
 ```
- 
+
 ## 2.2 User Permission
- 
-Add the AVFoundation library: 
-```import AVFoundation
-``` 
 
-Create a `setupAudio()` function: 
-
+Add the AVFoundation library:
+```swift
+import AVFoundation
 ```
+
+Create a `setupAudio()` function:
+
+```swift
     private func setupAudio() {
         do {
             let session = AVAudioSession.sharedInstance()
@@ -289,12 +284,12 @@ Create a `setupAudio()` function:
 
 ## 2.3 Enable / Disable
 
-To add functionality for enable / disable, we simple create functions that call the `.enable()` or `.disable()` methods on media property of our instance of the conversation client like so down below in sections 2.3.1 and 2.3.2!
- 
-### 2.3.1 Enable 
-Create a function for enable. 
+To add functionality for enable / disable, we simple create functions that call the `.enable()` or `.disable()` methods on media property of our instance of the conversation client like so down below in sections 2.3.1 and 2.3.2
 
-```
+### 2.3.1 Enable
+Create a function for enable.
+
+```swift
     private func enable() {
         do {
             try self.conversation?.audio.enable()
@@ -305,9 +300,9 @@ Create a function for enable.
 ```
 
 ### 2.3.2 Disable
-Create a function for disable. 
+Create a function for disable.
 
-```
+```swift
     @IBAction internal func disable() {
         conversation?.audio.disable()
 
@@ -315,38 +310,33 @@ Create a function for disable.
     }
 ```
 
-## 2.4 Speaker Emoji for UI 
+## 2.4 Speaker Emoji for UI
 
-Let us add a speaker emoji for our UI 🔈 🔉 🔊 now! Drag and drop a UIButton on the left hand side of the UITextField. Control click to drag an action onto `ViewController.Swift`. Name the function like so: 
+Let's use a speaker emoji for our UI. Drag and drop a UIButton on the left hand side of the UITextField. Control click to drag an action onto `ViewController.Swift`. Name the function like so:
 
-``` Swift
+```swift
 
-    @IBAction func phoneButtonPressed(_ sender: UIButton)
-    
-    {
-    
+  @IBAction func phoneButtonPressed(_ sender: UIButton) {
+
     do {
-           try conversation?.audio.enable()
-sender.titleLabel?.text = ":mute:"
-       } 
-       
-       catch {
-           conversation?.audio.disable()
-sender.titleLabel?.text = ":speaker:"
+        try conversation?.audio.enable()
+        sender.titleLabel?.text = "🔇"
+    }
+    catch {
+          conversation?.audio.disable()
+          sender.titleLabel?.text = "🔈"
+	}
 
-		}
-    
-}
-    
+  }
+
 ```
 
-Configure the text property on the button's text label to display either speaker 🔈 for enabled audio or else mute 🔇 for disabled audio. 
+Configure the text property on the button's text label to display either speaker 🔈 for enabled audio or else mute 🔇 for disabled audio.
 
-## 2.5 Console logs 
+## 2.5 Console logs
 
-Wow! If we correctly implemented our enable / disable functions, then we will see really awesome updates right there inside of Xcode from our very own console log!
+By implementing our enable / disable functions, we will see the updates right there inside of Xcode in the console log!
 
 ## 3.0 - Try it out!
 
-After this you should be able to run the app and enable / disable audio.
-
+After this you should be able to run the app and enable / disable audio. Try speaking to your self!

@@ -20,10 +20,7 @@ Currently the Conversation API offers basic IP messaging with the following feat
 - Cache support
 - Typing indicators
 - Message sent, delivered and read receipts
-
-Upcoming features will include:
 - Image support
-- Push notifications
 - Voice support
 
 ## Participating in the Early Adopter program
@@ -50,4 +47,3 @@ The [Nexmo Conversation iOS SDK API Reference docs](https://ea.developer.nexmo.c
 ## Additional Resources
 
 * [Nexmo CLI](https://github.com/nexmo/nexmo-cli)
-
